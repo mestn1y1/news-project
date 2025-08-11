@@ -9,10 +9,10 @@ import {
 import NewsList from "@/components/news/newsList";
 
 export default async function FilteredNewsPage({ params }) {
-  const filter = params.filter;
+  const filter = params.filter ?? [];
 
-  const selectedYear = filter?.[0];
-  const selectedMonth = filter?.[1];
+  const selectedYear = filter[0] ? Number(filter[0]) : null;
+  const selectedMonth = filter[1] ? Number(filter[1]) : null;
 
   let news;
   let links = await getAvailableNewsYears();
@@ -34,11 +34,13 @@ export default async function FilteredNewsPage({ params }) {
   }
 
   const availableYears = await getAvailableNewsYears();
-  const availableMonths = await getAvailableNewsMonths(selectedYear);
+  const availableMonths = selectedYear
+    ? await getAvailableNewsMonths(selectedYear)
+    : [];
 
   if (
-    (selectedYear && !availableYears.includes(+selectedYear)) ||
-    (selectedMonth && !availableMonths.includes(+selectedMonth))
+    (selectedYear && !availableYears.includes(selectedYear)) ||
+    (selectedMonth && !availableMonths.includes(selectedMonth))
   ) {
     throw new Error("Invalid filter.");
   }
@@ -54,8 +56,8 @@ export default async function FilteredNewsPage({ params }) {
                 : `/archive/${link}`;
 
               return (
-                <li key={link}>
-                  <Link href={href}>{link}</Link>
+                <li key={String(link)}>
+                  <Link href={href}>{String(link)}</Link>
                 </li>
               );
             })}
