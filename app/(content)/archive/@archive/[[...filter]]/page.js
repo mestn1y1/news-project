@@ -19,7 +19,7 @@ export default async function FilteredNewsPage({ params }) {
 
   if (selectedYear && !selectedMonth) {
     news = await getNewsForYear(selectedYear);
-    links = getAvailableNewsMonths(selectedYear);
+    links = await getAvailableNewsMonths(selectedYear);
   }
 
   if (selectedYear && selectedMonth) {
@@ -34,11 +34,11 @@ export default async function FilteredNewsPage({ params }) {
   }
 
   const availableYears = await getAvailableNewsYears();
+  const availableMonths = await getAvailableNewsMonths(selectedYear);
 
   if (
-    (selectedYear && !availableYears.includes(selectedYear)) ||
-    (selectedMonth &&
-      !getAvailableNewsMonths(selectedYear).includes(selectedMonth))
+    (selectedYear && !availableYears.includes(+selectedYear)) ||
+    (selectedMonth && !availableMonths.includes(+selectedMonth))
   ) {
     throw new Error("Invalid filter.");
   }
